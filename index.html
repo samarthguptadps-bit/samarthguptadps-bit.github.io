@@ -1,167 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Cyber Maths Matching Games</title>
-<style>
-body{
-  margin:0;font-family:Arial, sans-serif;overflow-x:hidden;color:#fff;position:relative;
-  background:#0b0c1a;
-}
-header{text-align:center;padding:20px;font-size:32px;font-weight:800;letter-spacing:1px;text-shadow:0 0 10px #00e5ff,0 0 20px #6c63ff;}
-.menu{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-bottom:20px;}
-button{padding:10px 18px;border:none;border-radius:12px;cursor:pointer;font-weight:bold;background:linear-gradient(135deg,#00e5ff,#6c63ff);color:#000;box-shadow:0 0 15px rgba(0,229,255,.5);transition:transform .2s, box-shadow .2s;}
-button:hover{transform:scale(1.1);box-shadow:0 0 25px #00e5ff,0 0 30px #6c63ff;}
-.game{display:none;max-width:1000px;margin:auto;padding:20px;position:relative;z-index:2;}
-.columns{display:flex;gap:20px;}.col{width:50%;}
-.item{background:linear-gradient(135deg,#e8f0ff,#c7d2fe);color:#000;padding:12px;margin:8px 0;border-radius:10px;cursor:pointer;text-align:center;font-weight:bold;box-shadow:0 0 8px #00e5ff;transition: transform .15s, box-shadow .15s;}
-.item:hover{transform:scale(1.05);box-shadow:0 0 15px #00e5ff;}
-.selected{background:#ffe066;}
-.correct{background:#7CFC98;box-shadow:0 0 20px #7CFC98;}
-.wrong{background:#ff6b6b;}
-.popup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);justify-content:center;align-items:center;z-index:1000;}
-.popup-content{background:white;color:black;padding:30px;border-radius:20px;text-align:center;animation:pop .5s ease;}
-@keyframes pop{0%{transform:scale(.3)}100%{transform:scale(1)}}
-.decor{font-size:32px;margin-top:10px;}
-#timer{text-align:center;font-size:24px;margin-bottom:10px;}
-#playerForm{text-align:center;margin-bottom:20px;}
-#playerForm input{padding:6px;margin:4px;border-radius:6px;border:none;}
-/* Cyber animated chip background */
-body::after{
-  content:"";
-  position:fixed;
-  top:0;left:0;width:200%;height:200%;
-  background-image:
-    repeating-linear-gradient(45deg,rgba(0,229,255,0.1) 0 2px,transparent 2px 20px),
-    repeating-linear-gradient(-45deg,rgba(108,99,255,0.1) 0 2px,transparent 2px 20px);
-  animation:moveLines 30s linear infinite;
-  z-index:0;
-  pointer-events:none;
-}
-@keyframes moveLines{
-  0%{transform:translate(0,0);}
-  100%{transform:translate(-50px,50px);}
-}
-</style>
+    <meta charset="UTF-8">
+    <title>ROBO-MATH | CREATED BY SAMARTH</title>
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-orange: #ff9d00;
+            --neon-purple: #bc13fe;
+            --bright-bg: #050a1f;
+            --card-bg: rgba(15, 25, 55, 0.98);
+        }
+
+        body {
+            background-color: var(--bright-bg);
+            background-image: radial-gradient(circle at 50% 50%, #1e3a8a 0%, #050a1f 100%);
+            color: white; font-family: 'Arial Black', sans-serif; margin: 0;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* --- CREATOR SIGNATURE (SAMARTH) --- */
+        .creator-banner {
+            width: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff9d00, #00f2ff, #bc13fe, #ff0000);
+            background-size: 400% 400%;
+            animation: gradientMove 8s ease infinite;
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 3px solid gold;
+            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.5);
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .creator-name {
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 2px 2px 4px #000;
+            letter-spacing: 2px;
+        }
+
+        .creator-sub {
+            font-size: 0.9rem;
+            color: #fff;
+            opacity: 0.9;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .id-card {
+            background: var(--card-bg); border-bottom: 5px solid var(--neon-blue);
+            padding: 15px; width: 100%; display: flex; justify-content: center; gap: 20px;
+        }
+        .id-card input { border: 3px solid var(--neon-purple); padding: 8px; font-weight: 900; width: 120px; border-radius: 5px; }
+
+        .container { display: grid; grid-template-columns: 1fr 420px; gap: 25px; width: 98%; margin-top: 20px; }
+        .match-vault { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .game-block {
+            background: var(--card-bg); border: 3px solid var(--neon-purple);
+            border-radius: 20px; padding: 15px; min-height: 580px; position: relative;
+        }
+
+        /* --- TIC TAC TOE --- */
+        .ttt-container { position: relative; display: inline-block; margin: 0 auto; }
+        #board { display: grid; gap: 8px; background: var(--neon-blue); padding: 8px; border-radius: 10px; position: relative; }
+        .cell { width: 80px; height: 80px; background: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; color: black; position: relative; }
+        #strike-line { position: absolute; background-color: var(--neon-orange); box-shadow: 0 0 15px var(--neon-orange); z-index: 10; display: none; pointer-events: none; }
+        .result-banner { font-size: 1.6rem; font-weight: 900; margin-top: 15px; min-height: 45px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+        .win-text { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); animation: flash 0.4s infinite alternate; }
+        .tie-text { color: var(--neon-orange); }
+
+        @keyframes flash { from { transform: scale(1); } to { transform: scale(1.05); } }
+
+        /* --- SHARED STYLES --- */
+        .level-indicator { background: var(--neon-purple); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; position: absolute; top: 10px; right: 10px; }
+        .timer-unit { background: #000; color: var(--neon-orange); text-align: center; padding: 8px; font-size: 2rem; border: 3px solid var(--neon-orange); margin-bottom: 10px; border-radius: 10px; font-family: 'Courier New', monospace; }
+        .activate-btn { width: 100%; padding: 15px; background: var(--neon-orange); color: #000; font-weight: 900; cursor: pointer; border: none; border-radius: 8px; }
+        .chip { background: #fff; border: 3px solid var(--neon-blue); color: #000; padding: 10px; cursor: grab; text-align: center; font-weight: 900; border-radius: 8px; }
+        .slot { background: #000; border: 2px dashed var(--neon-purple); min-height: 42px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--neon-orange); border-radius: 8px; }
+        .reward-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 5000; justify-content: center; align-items: center; }
+        .reward-card { background: white; color: #333; padding: 40px; border-radius: 30px; text-align: center; border: 8px solid var(--neon-orange); }
+        .columns { display: flex; justify-content: space-between; margin-top: 10px; }
+        .col { width: 47%; display: flex; flex-direction: column; gap: 8px; }
+    </style>
 </head>
 <body>
 
-<header>🤖 Cyber Maths Matching Games 🤖</header>
-
-<div id="playerForm">
-  <input type="text" id="playerName" placeholder="Enter Name">
-  <input type="text" id="playerClass" placeholder="Class">
-  <input type="text" id="playerRoll" placeholder="Roll Number">
+<div class="creator-banner">
+    <div class="creator-name">🚀 MASTER CREATOR: SAMARTH 🚀</div>
+    <div class="creator-sub">CLASS 7C | INNOVATION & LOGIC LABS</div>
 </div>
 
-<div class="menu">
-  <button onclick="startGame('g1')">Exponents → Decimals</button>
-  <button onclick="startGame('g2')">Exponents → Fractions</button>
-  <button onclick="startGame('g3')">Fractions → Decimals</button>
+<div class="id-card">
+    <input type="text" placeholder="PLAYER NAME">
+    <input type="text" placeholder="CLASS">
+    <input type="text" placeholder="ROLL NO">
 </div>
 
-<div id="timer"></div>
-<div id="g1" class="game"></div>
-<div id="g2" class="game"></div>
-<div id="g3" class="game"></div>
+<div class="container">
+    <div class="match-vault" id="master-container"></div>
 
-<div id="popup" class="popup">
-  <div class="popup-content">
-    <h2 id="winText">🎉 PERFECT MATCH! 🎉</h2>
-    <div class="decor">🌸 ⭐ 🌼 🎊 🌟</div><br>
-    <button onclick="closePopup()">Play Again</button>
-  </div>
+    <div class="ttt-vault" style="background:var(--card-bg); border:4px solid var(--neon-blue); padding:20px; border-radius:25px; text-align:center;">
+        <div style="color:var(--neon-orange); font-size:1.5rem; margin-bottom:10px;">FUN MODE PLAY</div>
+        <h2 style="color:var(--neon-blue); margin:0 0 15px 0;">BATTLE GRID</h2>
+        
+        <div class="ttt-container">
+            <div id="board"></div>
+            <div id="strike-line"></div>
+        </div>
+
+        <div id="ttt-status" class="result-banner">X's TURN</div>
+        <button onclick="initTTT()" style="margin-top:10px; background:var(--neon-blue); padding:10px 20px; border:none; font-weight:bold; cursor:pointer; border-radius:8px; color:#000;">RESET GRID</button>
+    </div>
 </div>
 
-<audio id="pop">
-  <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQgAAAAA">
-</audio>
+<div id="celebration" class="reward-overlay">
+    <div class="reward-card">
+        <h1 id="pop-title">LEVEL COMPLETE!</h1>
+        <div style="font-size:50px">🌸 ⭐ 🎓 ⭐ 🌸</div>
+        <p id="pop-desc" style="font-weight:bold;"></p>
+        <button onclick="nextLevelAction()" style="padding:10px 20px; background:var(--neon-blue); border:none; font-weight:bold; cursor:pointer; border-radius:5px;">NEXT CORE</button>
+    </div>
+</div>
 
 <script>
-let selected=null, done=0, total=15, timerInterval, currentPlayer="";
-
-function playPop(){document.getElementById('pop').play();}
-function showGame(id){document.querySelectorAll('.game').forEach(g=>g.style.display='none');if(id)document.getElementById(id).style.display='block';}
-function updateTimer(sec){const min=Math.floor(sec/60);const s=sec%60;document.getElementById('timer').textContent=`⏱ Time Left: ${min}:${s<10?'0'+s:s}`;}
-function startTimer(duration){
-  clearInterval(timerInterval);
-  let time=duration;
-  updateTimer(time);
-  timerInterval=setInterval(()=>{
-    time--;
-    updateTimer(time);
-    if(time<=0){
-      clearInterval(timerInterval);
-      alert("⏰ Time's up! Try again.");
-      showGame(null);
-    }
-  },1000);
-}
-
-function startGame(id){
-  const name=document.getElementById('playerName').value.trim();
-  if(name===""){alert("Please enter your Name");return;}
-  currentPlayer=name;
-  done=0;
-  showGame(id);
-  startTimer(150); // 2.5 min
-}
-
-/* Match the following logic */
-function makeGame(id,pairs){
-  const g=document.getElementById(id);
-  g.innerHTML='<div class="columns"><div class="col L"></div><div class="col R"></div></div>';
-  const L=g.querySelector('.L'), R=g.querySelector('.R');
-  const right=[...pairs].sort(()=>Math.random()-0.5);
-  pairs.forEach(p=>{
-    const d=document.createElement('div');
-    d.className='item';
-    d.textContent=p.l;
-    d.onclick=()=>{document.querySelectorAll('.L .item').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');selected=p.r;playPop();};
-    L.appendChild(d);
-  });
-  right.forEach(p=>{
-    const d=document.createElement('div');
-    d.className='item';
-    d.textContent=p.r;
-    d.onclick=()=>{
-      playPop();
-      if(selected===p.r){
-        d.classList.add('correct');
-        done++;
-        if(done===total){
-          clearInterval(timerInterval);
-          document.getElementById('winText').textContent=`🎉 ${currentPlayer} WON! 🎉`;
-          document.getElementById('popup').style.display='flex';
-        }
-      }else d.classList.add('wrong');
+    // --- MATH DATA ---
+    const gameData = {
+        g1: { title: "EXPONENTS", levels: [
+            { time: 180, pairs: [{q:"2³", a:"8"}, {q:"3²", a:"9"}, {q:"5²", a:"25"}, {q:"4²", a:"16"}, {q:"10²", a:"100"}, {q:"1³", a:"1"}, {q:"6²", a:"36"}, {q:"2⁴", a:"16"}, {q:"3³", a:"27"}, {q:"2²", a:"4"}] },
+            { time: 240, pairs: [{q:"2⁵", a:"32"}, {q:"3⁴", a:"81"}, {q:"4³", a:"64"}, {q:"5³", a:"125"}, {q:"6³", a:"216"}, {q:"7³", a:"343"}, {q:"11²", a:"121"}, {q:"12²", a:"144"}, {q:"2⁶", a:"64"}, {q:"10⁴", a:"10000"}] },
+            { time: 300, pairs: [{q:"2⁸", a:"256"}, {q:"3⁵", a:"243"}, {q:"5⁴", a:"625"}, {q:"13²", a:"169"}, {q:"15²", a:"225"}, {q:"4⁴", a:"256"}, {q:"2⁷", a:"128"}, {q:"9³", a:"729"}, {q:"8³", a:"512"}, {q:"20²", a:"400"}] }
+        ]},
+        g2: { title: "FRAC TO DEC", levels: [
+            { time: 420, pairs: [{q:"1/2", a:"0.5"}, {q:"1/4", a:"0.25"}, {q:"3/4", a:"0.75"}, {q:"1/5", a:"0.2"}, {q:"2/5", a:"0.4"}, {q:"4/5", a:"0.8"}, {q:"1/10", a:"0.1"}, {q:"1/8", a:"0.125"}, {q:"1/20", a:"0.05"}, {q:"1/100", a:"0.01"}] },
+            { time: 500, pairs: [{q:"3/8", a:"0.375"}, {q:"5/8", a:"0.625"}, {q:"7/8", a:"0.875"}, {q:"3/20", a:"0.15"}, {q:"7/20", a:"0.35"}, {q:"9/20", a:"0.45"}, {q:"1/25", a:"0.04"}, {q:"4/25", a:"0.16"}, {q:"1/50", a:"0.02"}, {q:"7/50", a:"0.14"}] },
+            { time: 600, pairs: [{q:"1/40", a:"0.025"}, {q:"3/40", a:"0.075"}, {q:"1/125", a:"0.008"}, {q:"1/250", a:"0.004"}, {q:"13/20", a:"0.65"}, {q:"17/20", a:"0.85"}, {q:"9/25", a:"0.36"}, {q:"21/50", a:"0.42"}, {q:"11/40", a:"0.275"}, {q:"1/500", a:"0.002"}] }
+        ]},
+        g3: { title: "PERC TO FRAC", levels: [
+            { time: 420, pairs: [{q:"50%", a:"1/2"}, {q:"25%", a:"1/4"}, {q:"75%", a:"3/4"}, {q:"20%", a:"1/5"}, {q:"40%", a:"2/5"}, {q:"60%", a:"3/5"}, {q:"80%", a:"4/5"}, {q:"10%", a:"1/10"}, {q:"100%", a:"1/1"}, {q:"5%", a:"1/20"}] },
+            { time: 500, pairs: [{q:"12.5%", a:"1/8"}, {q:"37.5%", a:"3/8"}, {q:"62.5%", a:"5/8"}, {q:"87.5%", a:"7/8"}, {q:"15%", a:"3/20"}, {q:"35%", a:"7/20"}, {q:"4%", a:"1/25"}, {q:"16%", a:"4/25"}, {q:"2%", a:"1/50"}, {q:"125%", a:"5/4"}] },
+            { time: 600, pairs: [{q:"0.5%", a:"1/200"}, {q:"0.2%", a:"1/500"}, {q:"2.5%", a:"1/40"}, {q:"7.5%", a:"3/40"}, {q:"250%", a:"5/2"}, {q:"0.1%", a:"1/1000"}, {q:"6.25%", a:"1/16"}, {q:"18.75%", a:"3/16"}, {q:"45%", a:"9/20"}, {q:"95%", a:"19/20"}] }
+        ]},
+        g4: { title: "PERC TO DEC", levels: [
+            { time: 420, pairs: [{q:"10%", a:"0.1"}, {q:"50%", a:"0.5"}, {q:"25%", a:"0.25"}, {q:"1%", a:"0.01"}, {q:"100%", a:"1.0"}, {q:"5%", a:"0.05"}, {q:"20%", a:"0.2"}, {q:"75%", a:"0.75"}, {q:"30%", a:"0.3"}, {q:"90%", a:"0.9"}] },
+            { time: 500, pairs: [{q:"12.5%", a:"0.125"}, {q:"37.5%", a:"0.375"}, {q:"0.5%", a:"0.005"}, {q:"150%", a:"1.5"}, {q:"2.5%", a:"0.025"}, {q:"45%", a:"0.45"}, {q:"5.5%", a:"0.055"}, {q:"0.1%", a:"0.001"}, {q:"250%", a:"2.5"}, {q:"12.1%", a:"0.121"}] },
+            { time: 600, pairs: [{q:"0.25%", a:"0.0025"}, {q:"6.25%", a:"0.0625"}, {q:"0.01%", a:"0.0001"}, {q:"175%", a:"1.75"}, {q:"0.75%", a:"0.0075"}, {q:"11.5%", a:"0.115"}, {q:"1.25%", a:"0.0125"}, {q:"0.05%", a:"0.0005"}, {q:"333%", a:"3.33"}, {q:"0.9%", a:"0.009"}] }
+        ]}
     };
-    R.appendChild(d);
-  });
-}
-function closePopup(){document.getElementById('popup').style.display='none';showGame(null);}
 
-/* Game 1: Exponents → Decimals */
-makeGame('g1',[
-{l:'2¹',r:'2'},{l:'2²',r:'4'},{l:'2³',r:'8'},{l:'3¹',r:'3'},{l:'3²',r:'9'},
-{l:'3³',r:'27'},{l:'4¹',r:'4'},{l:'4²',r:'16'},{l:'4³',r:'64'},{l:'5¹',r:'5'},
-{l:'5²',r:'25'},{l:'5³',r:'125'},{l:'6¹',r:'6'},{l:'6²',r:'36'},{l:'6³',r:'216'}
-]);
+    let currentLevels = { g1: 0, g2: 0, g3: 0, g4: 0 };
+    let timers = {};
+    let lastCompletedGame = "";
 
-/* Game 2: Exponents → Fractions */
-makeGame('g2',[
-{l:'2¹',r:'2/1'},{l:'2²',r:'4/1'},{l:'2³',r:'8/1'},{l:'3¹',r:'3/1'},{l:'3²',r:'9/1'},
-{l:'3³',r:'27/1'},{l:'4¹',r:'4/1'},{l:'4²',r:'16/1'},{l:'4³',r:'64/1'},{l:'5¹',r:'5/1'},
-{l:'5²',r:'25/1'},{l:'5³',r:'125/1'},{l:'6¹',r:'6/1'},{l:'6²',r:'36/1'},{l:'6³',r:'216/1'}
-]);
+    function speak(text) {
+        if ('speechSynthesis' in window) {
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.pitch = 1.1; msg.rate = 1.0;
+            window.speechSynthesis.speak(msg);
+        }
+    }
 
-/* Game 3: Fractions → Decimals */
-makeGame('g3',[
-{l:'1/2',r:'0.5'},{l:'1/4',r:'0.25'},{l:'3/4',r:'0.75'},{l:'1/5',r:'0.2'},{l:'2/5',r:'0.4'},
-{l:'3/5',r:'0.6'},{l:'4/5',r:'0.8'},{l:'1/10',r:'0.1'},{l:'3/10',r:'0.3'},{l:'7/10',r:'0.7'},
-{l:'9/10',r:'0.9'},{l:'1/8',r:'0.125'},{l:'5/8',r:'0.625'},{l:'1/20',r:'0.05'},{l:'1/50',r:'0.02'}
-]);
+    // --- MATH ENGINE ---
+    function renderGame(id) {
+        const container = document.getElementById('master-container');
+        let block = document.getElementById(id);
+        if(!block) { block = document.createElement('div'); block.className = 'game-block locked'; block.id = id; container.appendChild(block); }
+        const lvl = currentLevels[id]; const data = gameData[id].levels[lvl];
+        block.innerHTML = `<div class="level-indicator">LEVEL ${lvl + 1}</div><div class="timer-unit" id="t-${id}">${formatTime(data.time)}</div><button class="activate-btn" onclick="startLevel('${id}')">ACTIVATE CORE</button><div class="content-box"><h4 style="text-align:center; color:var(--neon-blue); margin-top:50px;">${gameData[id].title}</h4><div class="columns"><div class="col" id="q-${id}"></div><div class="col" id="a-${id}"></div></div></div>`;
+        let sQ = [...data.pairs].sort(() => Math.random() - 0.5); let sA = [...data.pairs].sort(() => Math.random() - 0.5);
+        sQ.forEach((p, i) => {
+            const chip = document.createElement('div'); chip.className = 'chip'; chip.innerText = p.q; chip.draggable = true; chip.dataset.ans = p.a; chip.id = `${id}-chip-${i}`; chip.ondragstart = (e) => e.dataTransfer.setData("text", e.target.id);
+            document.getElementById(`q-${id}`).appendChild(chip);
+            const slot = document.createElement('div'); slot.className = 'slot'; slot.dataset.val = sA[i].a; slot.innerText = sA[i].a; slot.ondragover = (e) => e.preventDefault(); slot.ondrop = handleDrop;
+            document.getElementById(`a-${id}`).appendChild(slot);
+        });
+    }
+
+    function startLevel(id) {
+        const block = document.getElementById(id); block.classList.remove('locked'); block.querySelector('.activate-btn').style.display = 'none';
+        let time = gameData[id].levels[currentLevels[id]].time;
+        timers[id] = setInterval(() => { time--; document.getElementById(`t-${id}`).innerText = formatTime(time); if(time <= 0) { clearInterval(timers[id]); block.classList.add('locked'); alert("TIME UP!"); } }, 1000);
+    }
+
+    function handleDrop(e) {
+        e.preventDefault(); const chipId = e.dataTransfer.getData("text"); const chip = document.getElementById(chipId); const slot = e.target.closest('.slot');
+        if(chip.dataset.ans === slot.dataset.val) { slot.innerHTML = ""; slot.appendChild(chip); slot.style.background = "var(--neon-blue)"; checkMathWin(chipId.split('-')[0]); }
+    }
+
+    function checkMathWin(id) {
+        const slots = document.getElementById(`a-${id}`).querySelectorAll('.slot');
+        if(Array.from(slots).every(s => s.children.length > 0)) {
+            clearInterval(timers[id]); lastCompletedGame = id;
+            document.getElementById('celebration').style.display = 'flex';
+            if(currentLevels[id] === 2) speak("Excellent! Samarth would be proud of your math skills.");
+        }
+    }
+
+    function nextLevelAction() {
+        document.getElementById('celebration').style.display = 'none';
+        if(currentLevels[lastCompletedGame] < 2) { currentLevels[lastCompletedGame]++; renderGame(lastCompletedGame); }
+        else { document.getElementById(lastCompletedGame).innerHTML = "<h2 style='text-align:center; color:gold; margin-top:200px;'>🎓 TOPPER 🎓</h2>"; }
+    }
+
+    function formatTime(s) { let m = Math.floor(s/60); let sec = s % 60; return `${m < 10 ? '0' : ''}${m}:${sec < 10 ? '0' : ''}${sec}`; }
+
+    // --- TIC TAC TOE ---
+    let tttBoard = Array(9).fill(null);
+    let tttTurn = 'X';
+    let tttActive = true;
+
+    function initTTT() {
+        const board = document.getElementById('board');
+        const striker = document.getElementById('strike-line');
+        const status = document.getElementById('ttt-status');
+        board.innerHTML = ''; board.style.gridTemplateColumns = 'repeat(3, 80px)';
+        tttBoard = Array(9).fill(null); tttTurn = 'X'; tttActive = true;
+        striker.style.display = 'none'; status.innerHTML = "X's TURN"; status.className = "result-banner";
+        for(let i=0; i<9; i++) {
+            const cell = document.createElement('div'); cell.className = 'cell'; cell.id = `cell-${i}`;
+            cell.onclick = () => makeMove(i); board.appendChild(cell);
+        }
+    }
+
+    function makeMove(i) {
+        if(!tttBoard[i] && tttActive) {
+            tttBoard[i] = tttTurn;
+            const cell = document.getElementById(`cell-${i}`);
+            const status = document.getElementById('ttt-status');
+            cell.innerText = tttTurn;
+            cell.style.color = tttTurn === 'X' ? 'var(--neon-blue)' : 'var(--neon-purple)';
+            
+            if(checkTTTWin()) {
+                tttActive = false;
+                status.innerHTML = `<span class="win-text">GREAT PLAYER ${tttTurn}!</span>`;
+                speak(`Samarth congratulates Player ${tttTurn} for a masterful victory!`);
+            } else if(!tttBoard.includes(null)) {
+                tttActive = false;
+                status.innerHTML = `<span class="tie-text">GREAT EFFORT (TIE)</span>`;
+                speak("A tie! Samarth appreciates the balanced competition.");
+            } else {
+                tttTurn = tttTurn === 'X' ? 'O' : 'X';
+                status.innerText = `${tttTurn}'s TURN`;
+            }
+        }
+    }
+
+    function checkTTTWin() {
+        const wins = [[0,1,2,'h',0],[3,4,5,'h',1],[6,7,8,'h',2],[0,3,6,'v',0],[1,4,7,'v',1],[2,5,8,'v',2],[0,4,8,'d',1],[2,4,6,'d',2]];
+        for(let w of wins) {
+            if(tttBoard[w[0]] && tttBoard[w[0]] === tttBoard[w[1]] && tttBoard[w[0]] === tttBoard[w[2]]) {
+                drawStriker(w[3], w[4]); return true;
+            }
+        }
+        return false;
+    }
+
+    function drawStriker(type, index) {
+        const striker = document.getElementById('strike-line');
+        striker.style.display = 'block';
+        if(type === 'h') { striker.style.width = '240px'; striker.style.height = '6px'; striker.style.left = '8px'; striker.style.top = (40 + (index * 88)) + 'px'; striker.style.transform = 'none'; }
+        else if(type === 'v') { striker.style.width = '6px'; striker.style.height = '240px'; striker.style.top = '8px'; striker.style.left = (40 + (index * 88)) + 'px'; striker.style.transform = 'none'; }
+        else if(type === 'd') { striker.style.width = '320px'; striker.style.height = '6px'; striker.style.top = '125px'; striker.style.left = '-35px'; striker.style.transform = index === 1 ? 'rotate(45deg)' : 'rotate(-45deg)'; }
+    }
+
+    ['g1','g2','g3','g4'].forEach(renderGame);
+    initTTT();
 </script>
-
 </body>
 </html>
