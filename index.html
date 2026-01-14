@@ -1,10 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Website</title>
+<meta charset="UTF-8">
+<title>Cyber Maths Matching Games</title>
+<style>
+body{
+  margin:0;font-family:Arial, sans-serif;overflow-x:hidden;color:#fff;position:relative;
+  background:#0b0c1a;
+}
+header{text-align:center;padding:20px;font-size:32px;font-weight:800;letter-spacing:1px;text-shadow:0 0 10px #00e5ff,0 0 20px #6c63ff;}
+.menu{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-bottom:20px;}
+button{padding:10px 18px;border:none;border-radius:12px;cursor:pointer;font-weight:bold;background:linear-gradient(135deg,#00e5ff,#6c63ff);color:#000;box-shadow:0 0 15px rgba(0,229,255,.5);transition:transform .2s, box-shadow .2s;}
+button:hover{transform:scale(1.1);box-shadow:0 0 25px #00e5ff,0 0 30px #6c63ff;}
+.game{display:none;max-width:1000px;margin:auto;padding:20px;position:relative;z-index:2;}
+.columns{display:flex;gap:20px;}.col{width:50%;}
+.item{background:linear-gradient(135deg,#e8f0ff,#c7d2fe);color:#000;padding:12px;margin:8px 0;border-radius:10px;cursor:pointer;text-align:center;font-weight:bold;box-shadow:0 0 8px #00e5ff;transition: transform .15s, box-shadow .15s;}
+.item:hover{transform:scale(1.05);box-shadow:0 0 15px #00e5ff;}
+.selected{background:#ffe066;}
+.correct{background:#7CFC98;box-shadow:0 0 20px #7CFC98;}
+.wrong{background:#ff6b6b;}
+.popup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);justify-content:center;align-items:center;z-index:1000;}
+.popup-content{background:white;color:black;padding:30px;border-radius:20px;text-align:center;animation:pop .5s ease;}
+@keyframes pop{0%{transform:scale(.3)}100%{transform:scale(1)}}
+.decor{font-size:32px;margin-top:10px;}
+#timer{text-align:center;font-size:24px;margin-bottom:10px;}
+#playerForm{text-align:center;margin-bottom:20px;}
+#playerForm input{padding:6px;margin:4px;border-radius:6px;border:none;}
+/* Cyber animated chip background */
+body::after{
+  content:"";
+  position:fixed;
+  top:0;left:0;width:200%;height:200%;
+  background-image:
+    repeating-linear-gradient(45deg,rgba(0,229,255,0.1) 0 2px,transparent 2px 20px),
+    repeating-linear-gradient(-45deg,rgba(108,99,255,0.1) 0 2px,transparent 2px 20px);
+  animation:moveLines 30s linear infinite;
+  z-index:0;
+  pointer-events:none;
+}
+@keyframes moveLines{
+  0%{transform:translate(0,0);}
+  100%{transform:translate(-50px,50px);}
+}
+</style>
 </head>
 <body>
-  <h1>Hello World 🌍</h1>
-  <p>My website is live on GitHub Pages!</p>
+
+<header>🤖 Cyber Maths Matching Games 🤖</header>
+
+<div id="playerForm">
+  <input type="text" id="playerName" placeholder="Enter Name">
+  <input type="text" id="playerClass" placeholder="Class">
+  <input type="text" id="playerRoll" placeholder="Roll Number">
+</div>
+
+<div class="menu">
+  <button onclick="startGame('g1')">Exponents → Decimals</button>
+  <button onclick="startGame('g2')">Exponents → Fractions</button>
+  <button onclick="startGame('g3')">Fractions → Decimals</button>
+</div>
+
+<div id="timer"></div>
+<div id="g1" class="game"></div>
+<div id="g2" class="game"></div>
+<div id="g3" class="game"></div>
+
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <h2 id="winText">🎉 PERFECT MATCH! 🎉</h2>
+    <div class="decor">🌸 ⭐ 🌼 🎊 🌟</div><br>
+    <button onclick="closePopup()">Play Again</button>
+  </div>
+</div>
+
+<audio id="pop">
+  <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQgAAAAA">
+</audio>
+
+<script>
+let selected=null, done=0, total=15, timerInterval, currentPlayer="";
+
+function playPop(){document.getElementById('pop').play();}
+function showGame(id){document.querySelectorAll('.game').forEach(g=>g.style.display='none');if(id)document.getElementById(id).style.display='block';}
+function updateTimer(sec){const min=Math.floor(sec/60);const s=sec%60;document.getElementById('timer').textContent=`⏱ Time Left: ${min}:${s<10?'0'+s:s}`;}
+function startTimer(duration){
+  clearInterval(timerInterval);
+  let time=duration;
+  updateTimer(time);
+  timerInterval=setInterval(()=>{
+    time--;
+    updateTimer(time);
+    if(time<=0){
+      clearInterval(timerInterval);
+      alert("⏰ Time's up! Try again.");
+      showGame(null);
+    }
+  },1000);
+}
+
+function startGame(id){
+  const name=document.getElementById('playerName').value.trim();
+  if(name===""){alert("Please enter your Name");return;}
+  currentPlayer=name;
+  done=0;
+  showGame(id);
+  startTimer(150); // 2.5 min
+}
+
+/* Match the following logic */
+function makeGame(id,pairs){
+  const g=document.getElementById(id);
+  g.innerHTML='<div class="columns"><div class="col L"></div><div class="col R"></div></div>';
+  const L=g.querySelector('.L'), R=g.querySelector('.R');
+  const right=[...pairs].sort(()=>Math.random()-0.5);
+  pairs.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='item';
+    d.textContent=p.l;
+    d.onclick=()=>{document.querySelectorAll('.L .item').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');selected=p.r;playPop();};
+    L.appendChild(d);
+  });
+  right.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='item';
+    d.textContent=p.r;
+    d.onclick=()=>{
+      playPop();
+      if(selected===p.r){
+        d.classList.add('correct');
+        done++;
+        if(done===total){
+          clearInterval(timerInterval);
+          document.getElementById('winText').textContent=`🎉 ${currentPlayer} WON! 🎉`;
+          document.getElementById('popup').style.display='flex';
+        }
+      }else d.classList.add('wrong');
+    };
+    R.appendChild(d);
+  });
+}
+function closePopup(){document.getElementById('popup').style.display='none';showGame(null);}
+
+/* Game 1: Exponents → Decimals */
+makeGame('g1',[
+{l:'2¹',r:'2'},{l:'2²',r:'4'},{l:'2³',r:'8'},{l:'3¹',r:'3'},{l:'3²',r:'9'},
+{l:'3³',r:'27'},{l:'4¹',r:'4'},{l:'4²',r:'16'},{l:'4³',r:'64'},{l:'5¹',r:'5'},
+{l:'5²',r:'25'},{l:'5³',r:'125'},{l:'6¹',r:'6'},{l:'6²',r:'36'},{l:'6³',r:'216'}
+]);
+
+/* Game 2: Exponents → Fractions */
+makeGame('g2',[
+{l:'2¹',r:'2/1'},{l:'2²',r:'4/1'},{l:'2³',r:'8/1'},{l:'3¹',r:'3/1'},{l:'3²',r:'9/1'},
+{l:'3³',r:'27/1'},{l:'4¹',r:'4/1'},{l:'4²',r:'16/1'},{l:'4³',r:'64/1'},{l:'5¹',r:'5/1'},
+{l:'5²',r:'25/1'},{l:'5³',r:'125/1'},{l:'6¹',r:'6/1'},{l:'6²',r:'36/1'},{l:'6³',r:'216/1'}
+]);
+
+/* Game 3: Fractions → Decimals */
+makeGame('g3',[
+{l:'1/2',r:'0.5'},{l:'1/4',r:'0.25'},{l:'3/4',r:'0.75'},{l:'1/5',r:'0.2'},{l:'2/5',r:'0.4'},
+{l:'3/5',r:'0.6'},{l:'4/5',r:'0.8'},{l:'1/10',r:'0.1'},{l:'3/10',r:'0.3'},{l:'7/10',r:'0.7'},
+{l:'9/10',r:'0.9'},{l:'1/8',r:'0.125'},{l:'5/8',r:'0.625'},{l:'1/20',r:'0.05'},{l:'1/50',r:'0.02'}
+]);
+</script>
+
 </body>
 </html>
